@@ -1,8 +1,7 @@
 name: Publicar en GitHub Pages
 
+# Solo manual: GitHub Pages en repos privados requiere plan de pago.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
