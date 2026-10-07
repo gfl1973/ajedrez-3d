@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0a09" />
+  <meta name="description" content="Ajedrez 3D para navegador: materiales PBR, reflejos, modo torneo y motor propio." />
+  <title>Ajedrez 3D · Edición Ébano y Oro</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♚</text></svg>" />
+</head>
+<body>
+  <div id="stage"></div>
+  <div class="vignette"></div>
+
+  <!-- Pantalla de carga -->
+  <div id="loader">
+    <div class="loader-crown">♚</div>
+    <div class="loader-line"><span></span></div>
+    <p>Puliendo las piezas…</p>
+  </div>
+
+  <!-- Menú principal -->
+  <section id="menu" class="screen">
+    <header class="brand">
+      <div class="brand-mark">♚</div>
+      <h1>Ajedrez <em>3D</em></h1>
+      <div class="brand-rule"><span></span><i>◆</i><span></span></div>
+      <p class="tagline">El juego de los reyes, esculpido en luz</p>
+    </header>
+    <nav class="menu-buttons">
+      <button class="btn glow" data-action="continue" hidden><span>Continuar partida</span><small id="continueInfo"></small></button>
+      <button class="btn glow primary" data-action="standard"><span>Partida estándar</span></button>
+      <button class="btn glow" data-action="tournament"><span>Modo torneo</span></button>
+      <button class="btn glow" data-action="settings"><span>Ajustes</span></button>
+      <button class="btn glow" data-action="help"><span>Cómo jugar</span></button>
+    </nav>
+    <footer class="menu-foot" id="menuStats"></footer>
+  </section>
+
+  <!-- Configuración de partida estándar -->
+  <section id="setup" class="screen panel-screen">
+    <div class="panel">
+      <h2>Partida estándar</h2>
+      <p class="sub">Elige rival, color y ritmo de juego</p>
+      <div class="field">
+        <label>Modo de juego</label>
+        <div class="seg" data-name="mode">
+          <button data-value="hvc" class="on">Humano vs CPU</button>
+          <button data-value="hvh">Humano vs Humano</button>
+        </div>
+      </div>
+      <div class="field cpu-only">
+        <label>Tu color</label>
+        <div class="seg" data-name="color">
+          <button data-value="w" class="on">♔ Blancas</button>
+          <button data-value="b">♚ Negras</button>
+          <button data-value="r">Al azar</button>
+        </div>
+      </div>
+      <div class="field cpu-only">
+        <label>Dificultad</label>
+        <div class="levels" id="levels"></div>
+      </div>
+      <div class="field">
+        <label>Control de tiempo</label>
+        <div class="seg wrap" data-name="tc">
+          <button data-value="0" class="on">Sin reloj</button>
+          <button data-value="3+2">3 + 2</button>
+          <button data-value="5+0">5 + 0</button>
+          <button data-value="10+5">10 + 5</button>
+          <button data-value="15+10">15 + 10</button>
+          <button data-value="30+0">30 + 0</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" data-action="back">Volver</button>
+        <button class="btn glow primary" data-action="start"><span>Empezar partida</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Torneo -->
+  <section id="tournament" class="screen panel-screen">
+    <div class="panel wide">
+      <h2>Circuito de Campeones</h2>
+      <p class="sub">Seis rivales. Tres vidas. Un solo campeón.</p>
+      <div class="t-board">
+        <div class="ladder" id="ladder"></div>
+        <aside class="scorecard" id="scorecard"></aside>
+      </div>
+      <div class="field t-new" id="tNewOptions">
+        <label>Ritmo del torneo</label>
+        <div class="seg" data-name="ttc">
+          <button data-value="0" class="on">Sin reloj</button>
+          <button data-value="5+3">5 + 3</button>
+          <button data-value="10+5">10 + 5</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" data-action="back">Volver</button>
+        <button class="btn ghost danger" data-action="t-reset" hidden>Abandonar torneo</button>
+        <button class="btn glow primary" data-action="t-play"><span>Comenzar torneo</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ajustes -->
+  <section id="settings" class="screen panel-screen">
+    <div class="panel wide">
+      <h2>Ajustes</h2>
+      <p class="sub">Materiales, sonido y rendimiento</p>
+      <div class="field">
+        <label>Juego de materiales</label>
+        <div class="themes" id="themes"></div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>Calidad gráfica</label>
+          <div class="seg" data-name="quality">
+            <button data-value="alta">Alta</button>
+            <button data-value="media">Media</button>
+            <button data-value="baja">Baja</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Velocidad de animación</label>
+          <div class="seg" data-name="animSpeed">
+            <button data-value="0.7">Pausada</button>
+            <button data-value="1">Normal</button>
+            <button data-value="1.6">Rápida</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Volumen</label>
+          <input type="range" id="volume" min="0" max="1" step="0.05" />
+        </div>
+        <div class="field toggles">
+          <label class="toggle"><input type="checkbox" id="optSound" /><span></span>Efectos de sonido</label>
+          <label class="toggle"><input type="checkbox" id="optMusic" /><span></span>Música ambiente</label>
+          <label class="toggle"><input type="checkbox" id="optLegal" /><span></span>Mostrar jugadas legales</label>
+          <label class="toggle"><input type="checkbox" id="optRotate" /><span></span>Girar la cámara en Humano vs Humano</label>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn glow primary" data-action="back"><span>Hecho</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ayuda -->
+  <section id="help" class="screen panel-screen">
+    <div class="panel">
+      <h2>Cómo jugar</h2>
+      <p class="sub">Todo lo que necesitas saber</p>
+      <ul class="help-list">
+        <li><b>Mover:</b> pulsa una pieza y después la casilla de destino. Las jugadas legales se iluminan.</li>
+        <li><b>Cámara:</b> arrastra para girar alrededor del tablero; rueda o pellizco para acercar.</li>
+        <li><b>Reglas completas:</b> enroque, captura al paso, coronación (eliges pieza), jaque mate, ahogado, triple repetición, 50 movimientos y material insuficiente.</li>
+        <li><b>Torneo:</b> vence a seis rivales de nivel creciente. Las tablas suman medio punto y repites ronda; cada derrota cuesta una vida.</li>
+        <li><b>Guardado automático:</b> puedes cerrar el navegador y continuar la partida más tarde.</li>
+      </ul>
+      <div class="keys">
+        <span><kbd>Esc</kbd> Menú</span><span><kbd>Ctrl</kbd>+<kbd>Z</kbd> Deshacer</span>
+        <span><kbd>F</kbd> Girar tablero</span><span><kbd>H</kbd> Pista</span>
+      </div>
+      <div class="actions">
+        <button class="btn glow primary" data-action="back"><span>Entendido</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interfaz de juego -->
+  <div id="hud" hidden>
+    <div class="hud-top">
+      <button class="icon-btn" data-action="pause" title="Menú (Esc)" aria-label="Menú">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+      <div class="players">
+        <div class="player" id="pW">
+          <div class="p-dot w"></div>
+          <div class="p-info"><div class="p-name"></div><div class="p-caps"></div></div>
+          <div class="p-clock"></div>
+        </div>
+        <div class="vs">vs</div>
+        <div class="player" id="pB">
+          <div class="p-dot b"></div>
+          <div class="p-info"><div class="p-name"></div><div class="p-caps"></div></div>
+          <div class="p-clock"></div>
+        </div>
+      </div>
+      <div class="hud-badge" id="hudBadge"></div>
+    </div>
+
+    <aside class="side">
+      <div class="side-head"><span>Jugadas</span><span id="openingName"></span></div>
+      <ol class="moves" id="moves"></ol>
+      <div class="side-actions">
+        <button class="icon-btn labeled" data-action="undo" title="Deshacer (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></svg><span>Deshacer</span></button>
+        <button class="icon-btn labeled" data-action="hint" title="Pista (H)"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z" /></svg><span>Pista</span></button>
+        <button class="icon-btn labeled" data-action="flip" title="Girar tablero (F)"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8" /><path d="M21 3v5h-5" /></svg><span>Girar</span></button>
+        <button class="icon-btn labeled" data-action="draw" title="Ofrecer tablas"><svg viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M5 7h14M5 17h14" /></svg><span>Tablas</span></button>
+        <button class="icon-btn labeled danger" data-action="resign" title="Rendirse"><svg viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5" /></svg><span>Rendirse</span></button>
+      </div>
+    </aside>
+
+    <div class="status" id="status"><span class="spinner"></span><span id="statusText"></span></div>
+  </div>
+
+  <!-- Menú de pausa -->
+  <div id="pause" class="modal" hidden>
+    <div class="dialog">
+      <h3>Partida en pausa</h3>
+      <div class="dialog-buttons col">
+        <button class="btn glow primary" data-action="resume"><span>Reanudar</span></button>
+        <button class="btn glow" data-action="settings"><span>Ajustes</span></button>
+        <button class="btn glow" data-action="copy-pgn"><span>Copiar PGN</span></button>
+        <button class="btn ghost" data-action="to-menu">Salir al menú principal</button>
+      </div>
+      <p class="fine">La partida se guarda automáticamente.</p>
+    </div>
+  </div>
+
+  <!-- Coronación -->
+  <div id="promo" class="modal" hidden>
+    <div class="dialog">
+      <h3>Coronación</h3>
+      <p class="fine">Elige la pieza en la que se convierte tu peón</p>
+      <div class="promo-choices">
+        <button data-piece="q"><span class="glyph"></span><small>Dama</small></button>
+        <button data-piece="r"><span class="glyph"></span><small>Torre</small></button>
+        <button data-piece="b"><span class="glyph"></span><small>Alfil</small></button>
+        <button data-piece="n"><span class="glyph"></span><small>Caballo</small></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fin de partida -->
+  <div id="gameover" class="modal" hidden>
+    <div class="dialog result">
+      <div class="result-mark" id="goMark">♚</div>
+      <h3 id="goTitle"></h3>
+      <p class="reason" id="goReason"></p>
+      <p class="fine" id="goExtra"></p>
+      <div class="dialog-buttons" id="goButtons"></div>
+    </div>
+  </div>
+
+  <!-- Confirmación genérica -->
+  <div id="confirm" class="modal" hidden>
+    <div class="dialog">
+      <h3 id="cfTitle"></h3>
+      <p class="fine" id="cfText"></p>
+      <div class="dialog-buttons">
+        <button class="btn ghost" data-cf="no">Cancelar</button>
+        <button class="btn glow primary" data-cf="yes"><span>Aceptar</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
