@@ -182,7 +182,7 @@ export class ChessScene {
     this.scene.add(key);
     this.keyLight = key;
     const rim = new THREE.DirectionalLight(0x9fb8ff, 1);
-    rim.position.set(-7, 6, -9);
+    rim.position.set(-6, 11, -9);
     this.scene.add(rim);
     this.rimLight = rim;
     this.hemi = new THREE.HemisphereLight(0xffffff, 0x111111, 0.12);

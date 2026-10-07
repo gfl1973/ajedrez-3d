@@ -15,7 +15,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; background: #050505; color: var(--ink); font-family: var(--sans); overflow: hidden; -webkit-font-smoothing: antialiased; }
+html, body { margin: 0; height: 100%; background: #050505; color: var(--ink); font-family: var(--sans); overflow: hidden; -webkit-font-smoothing: antialiased; font-variant-numeric: lining-nums; }
 button { font: inherit; color: inherit; }
 [hidden] { display: none !important; }
 
@@ -175,7 +175,7 @@ kbd { font-family: var(--sans); font-size: 11px; padding: 2px 7px; border: 1px s
 .p-name { font-family: var(--serif); font-size: 18px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .p-caps { font-family: var(--glyph); font-size: 13px; color: var(--ink-dim); min-height: 16px; letter-spacing: -1px; white-space: nowrap; overflow: hidden; }
 .p-caps b { font-family: var(--sans); font-size: 11px; color: var(--accent); margin-left: 6px; letter-spacing: 0; font-weight: 600; }
-.p-clock { font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 300; letter-spacing: 0.04em; padding-left: 10px; border-left: 1px solid var(--line); min-width: 78px; text-align: right; }
+.p-clock { font-variant-numeric: lining-nums tabular-nums; font-size: 22px; font-weight: 300; letter-spacing: 0.04em; padding-left: 10px; border-left: 1px solid var(--line); min-width: 78px; text-align: right; }
 .p-clock:empty { display: none; }
 .player.active .p-clock { color: #fff; text-shadow: 0 0 12px var(--accent-soft); }
 .p-clock.low { color: var(--danger) !important; animation: blink 1s steps(2) infinite; }

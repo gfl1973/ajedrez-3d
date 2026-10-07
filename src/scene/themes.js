@@ -16,7 +16,7 @@ export const THEMES = [
     accent: '#d8b46a', accentSoft: 'rgba(216,180,106,0.35)', swatch: ['#e6c068', '#0b0b0d'],
     bg: ['#2a2219', '#040404'], floor: ['#1d1812', '#050505'],
     env: 0.42, reflection: 0.5, bloom: { strength: 0.2, radius: 0.4, threshold: 1.0 },
-    key: ['#ffe9c7', 1.7], rim: ['#9fb8ff', 0.8], coords: '#d9b45a', particles: '#f3d48a',
+    key: ['#ffe9c7', 1.7], rim: ['#9fb8ff', 0.45], coords: '#d9b45a', particles: '#f3d48a',
     build() {
       const light = marbleCanvas(512, { base: '#ece4d2', vein: '#b9a27a', vein2: '#d8c9a8', scale: 2.4, sharp: 7, seed: 4 });
       const dark = marbleCanvas(512, { base: '#0c0c0e', vein: '#4a3d27', vein2: '#8a7444', scale: 2.2, sharp: 9, seed: 9, cloud: 0.4 });
@@ -34,7 +34,7 @@ export const THEMES = [
     accent: '#e2d6c0', accentSoft: 'rgba(226,214,192,0.35)', swatch: ['#f1efe9', '#141416'],
     bg: ['#2b2a29', '#050505'], floor: ['#1c1a18', '#060606'],
     env: 0.45, reflection: 0.4, bloom: { strength: 0.16, radius: 0.4, threshold: 0.97 },
-    key: ['#fff4e6', 1.55], rim: ['#c6d4ff', 0.7], coords: '#e8dcc4', particles: '#ffffff',
+    key: ['#fff4e6', 1.55], rim: ['#c6d4ff', 0.45], coords: '#e8dcc4', particles: '#ffffff',
     build() {
       const light = marbleCanvas(512, { base: '#f3f1ec', vein: '#9a9890', vein2: '#c9c6bd', scale: 3, sharp: 7, seed: 12 });
       const dark = marbleCanvas(512, { base: '#151517', vein: '#d8d4cc', vein2: '#6b6965', scale: 2.6, sharp: 10, seed: 3, cloud: 0.3 });
@@ -94,7 +94,7 @@ export const THEMES = [
     accent: '#9fd8ff', accentSoft: 'rgba(159,216,255,0.35)', swatch: ['#eaf6ff', '#2c48d8'],
     bg: ['#18222e', '#030407'], floor: ['#121a24', '#030406'],
     env: 0.65, reflection: 0.5, bloom: { strength: 0.22, radius: 0.45, threshold: 0.92 },
-    key: ['#ffffff', 1.5], rim: ['#8fc8ff', 1.1], coords: '#bfe3ff', particles: '#bfe6ff',
+    key: ['#ffffff', 1.5], rim: ['#8fc8ff', 0.6], coords: '#bfe3ff', particles: '#bfe6ff',
     build() {
       const light = marbleCanvas(512, { base: '#dfe6ee', vein: '#c5d0dc', scale: 2, sharp: 3, seed: 21, cloud: 0.05 });
       const dark = lacquerCanvas(512, { base: '#0a0e16', var: 0.25 });
