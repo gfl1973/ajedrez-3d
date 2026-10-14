@@ -90,11 +90,11 @@ export const THEMES = [
     },
   },
   {
-    id: 'glass', name: 'Cristal', desc: 'Cristal tallado transparente frente a zafiro, sobre vidrio esmerilado.',
-    accent: '#9fd8ff', accentSoft: 'rgba(159,216,255,0.35)', swatch: ['#eaf6ff', '#2c48d8'],
+    id: 'glass', name: 'Cristal', desc: 'Cristal tallado transparente frente a cristal ahumado, sobre vidrio esmerilado.',
+    accent: '#9fd8ff', accentSoft: 'rgba(159,216,255,0.35)', swatch: ['#eaf6ff', '#2b2724'],
     bg: ['#18222e', '#030407'], floor: ['#121a24', '#030406'],
     env: 0.65, reflection: 0.5, bloom: { strength: 0.22, radius: 0.45, threshold: 0.92 },
-    key: ['#ffffff', 1.5], rim: ['#8fc8ff', 0.6], coords: '#bfe3ff', particles: '#bfe6ff',
+    key: ['#ffffff', 1.5], rim: ['#e8e4de', 0.6], coords: '#bfe3ff', particles: '#bfe6ff',
     build() {
       const light = marbleCanvas(512, { base: '#dfe6ee', vein: '#c5d0dc', scale: 2, sharp: 3, seed: 21, cloud: 0.05 });
       const dark = lacquerCanvas(512, { base: '#0a0e16', var: 0.25 });
@@ -103,7 +103,7 @@ export const THEMES = [
         board: phys({ map: boardTexture({ lightSrc: light, darkSrc: dark, groove: 'rgba(170,210,255,0.35)' }), roughness: 0.16, clearcoat: 0.7, clearcoatRoughness: 0.15, metalness: 0.05, specularIntensity: 0.6 }),
         frame: phys({ map: frameTex, metalness: 1, roughness: 0.22 }),
         w: phys({ color: '#ffffff', transmission: 1, thickness: 0.7, roughness: 0.03, ior: 1.52, metalness: 0, clearcoat: 1, attenuationColor: new THREE.Color('#dff1ff'), attenuationDistance: 2.5, specularIntensity: 1 }),
-        b: phys({ color: '#5d7cff', transmission: 1, thickness: 0.7, roughness: 0.05, ior: 1.6, metalness: 0, clearcoat: 1, attenuationColor: new THREE.Color('#1b2fb0'), attenuationDistance: 0.55, specularIntensity: 1 }),
+        b: phys({ color: '#4a4440', transmission: 0.92, thickness: 0.9, roughness: 0.06, ior: 1.55, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05, attenuationColor: new THREE.Color('#2a2420'), attenuationDistance: 0.32, specularIntensity: 0.9, specularColor: new THREE.Color('#fff6ec'), envMapIntensity: 0.9 }),
       };
     },
   },

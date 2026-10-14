@@ -203,7 +203,7 @@ function syncSettingsUI() {
 }
 $('#brightness').addEventListener('input', (e) => { settings.exposure = +e.target.value; applyLight(); saveSettings(); });
 $('#glowStr').addEventListener('input', (e) => { settings.glow = +e.target.value; applyLight(); saveSettings(); });
-$('#tvMode').addEventListener('click', () => { settings.exposure = 0.7; settings.glow = 0; applyLight(); saveSettings(); sfx.play('click'); });
+$('#tvMode').addEventListener('click', () => { settings.exposure = 0.7; settings.glow = 0.1; applyLight(); saveSettings(); sfx.play('click'); });
 $('#lightReset').addEventListener('click', () => { settings.exposure = 0.95; settings.glow = 1; applyLight(); saveSettings(); sfx.play('click'); });
 $('#volume').addEventListener('input', (e) => { settings.volume = +e.target.value; sfx.setVolume(settings.volume); saveSettings(); });
 $('#optSound').addEventListener('change', (e) => { settings.sound = e.target.checked; sfx.setEnabled(settings.sound); saveSettings(); });

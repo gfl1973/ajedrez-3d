@@ -371,10 +371,11 @@ export class ChessScene {
 
   applyGlowToMaterials() {
     const m = this.theme._mats;
-    for (const mat of Object.values(m)) {
+    for (const [key, mat] of Object.entries(m)) {
       if (!mat || mat.emissiveIntensity === undefined) continue;
       if (mat.userData.baseEmissive === undefined) mat.userData.baseEmissive = mat.emissiveIntensity;
-      mat.emissiveIntensity = mat.userData.baseEmissive * this.glow;
+      // las líneas del tablero (neón) nunca bajan del 70 % para que se sigan viendo
+      mat.emissiveIntensity = mat.userData.baseEmissive * (key === 'board' ? Math.max(this.glow, 0.7) : this.glow);
     }
     // marcadores aditivos (sin tone mapping): atenuar color, mínimo 35 % para que se vean
     const f = 0.35 + 0.65 * this.glow;
