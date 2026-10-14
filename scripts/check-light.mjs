@@ -1,0 +1,15 @@
+import puppeteer from 'puppeteer-core';
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const b = await puppeteer.launch({ executablePath: '/usr/bin/google-chrome', headless: 'new', args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const p = await b.newPage(); await p.setViewport({ width: 1440, height: 900 });
+const errs = []; p.on('console', (m) => m.type() === 'error' && errs.push(m.text())); p.on('pageerror', (e) => errs.push(e.message));
+await p.goto('http://localhost:4173/', { waitUntil: 'load' }); await sleep(6000);
+await p.evaluate(() => document.querySelector('[data-action="settings"]').click()); await sleep(1500);
+await p.screenshot({ path: 'screenshots/ajustes-brillo.png' });
+await p.click('#tvMode'); await sleep(1500);
+const st = await p.evaluate(() => [document.getElementById('brightnessVal').textContent, document.getElementById('glowVal').textContent, localStorage.length]);
+await p.screenshot({ path: 'screenshots/ajustes-modo-tv.png' });
+await p.reload({ waitUntil: 'load' }); await sleep(5000);
+const persisted = await p.evaluate(() => Object.entries(localStorage).map(([k, v]) => k + '=' + v).join(' | '));
+console.log(JSON.stringify({ st, persisted, errs }));
+await b.close();

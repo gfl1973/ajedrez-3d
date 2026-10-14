@@ -248,3 +248,9 @@ kbd { font-family: var(--sans); font-size: 11px; padding: 2px 7px; border: 1px s
   .brand-rule { margin-left: auto; margin-right: auto; }
   .panel { padding: 28px 22px 22px; }
 }
+
+/* Modo glow reducido (TV/HDR) */
+.light-presets { display: flex; gap: 10px; flex-wrap: wrap; }
+.light-presets .btn { flex: 1; padding: 11px 14px; }
+body.no-glow *, body.no-glow *::after, body.no-glow *::before { text-shadow: none !important; }
+body.no-glow .btn, body.no-glow .btn::after, body.no-glow .level, body.no-glow .theme, body.no-glow .player, body.no-glow .rival, body.no-glow .icon-btn, body.no-glow .toggle span, body.no-glow #toast, body.no-glow .moves li span { box-shadow: none !important; }

@@ -44,6 +44,8 @@ const settings = store.load('settings', {
   theme: 'noir', sound: true, music: true, volume: 0.7, quality: coarse ? 'media' : 'alta',
   showLegal: true, autoRotate: true, animSpeed: 1,
 });
+if (settings.exposure === undefined) settings.exposure = 0.95;
+if (settings.glow === undefined) settings.glow = 1;
 const setupCfg = store.load('setup', { mode: 'hvc', color: 'w', level: 3, tc: '0', ttc: '0' });
 
 const sfx = new SoundFX();
@@ -84,8 +86,22 @@ function applyTheme() {
   const t = themeById(settings.theme);
   scene.setTheme(t.id);
   document.documentElement.style.setProperty('--accent', t.accent);
-  document.documentElement.style.setProperty('--accent-soft', t.accentSoft);
+  document.documentElement.style.setProperty('--accent-soft', scaleAlpha(t.accentSoft, settings.glow));
   $$('.theme').forEach((el) => el.classList.toggle('on', el.dataset.id === t.id));
+}
+function scaleAlpha(rgba, k) {
+  const m = /rgba\(([^,]+),([^,]+),([^,]+),\s*([\d.]+)\)/.exec(rgba || '');
+  return m ? `rgba(${m[1]},${m[2]},${m[3]}, ${(+m[4] * k).toFixed(3)})` : rgba;
+}
+function applyLight() {
+  scene.setExposure(settings.exposure);
+  scene.setGlow(settings.glow);
+  document.documentElement.style.setProperty('--glow', settings.glow);
+  document.body.classList.toggle('no-glow', settings.glow < 0.25);
+  applyTheme();
+  const b = document.getElementById('brightness'), g = document.getElementById('glowStr');
+  if (b) { b.value = settings.exposure; document.getElementById('brightnessVal').textContent = Math.round(settings.exposure * 100) + '%'; }
+  if (g) { g.value = settings.glow; document.getElementById('glowVal').textContent = settings.glow < 0.01 ? 'Apagado' : Math.round(settings.glow * 100) + '%'; }
 }
 function saveSettings() { store.save('settings', settings); }
 
@@ -185,6 +201,10 @@ function syncSettingsUI() {
   $('#optLegal').checked = settings.showLegal;
   $('#optRotate').checked = settings.autoRotate;
 }
+$('#brightness').addEventListener('input', (e) => { settings.exposure = +e.target.value; applyLight(); saveSettings(); });
+$('#glowStr').addEventListener('input', (e) => { settings.glow = +e.target.value; applyLight(); saveSettings(); });
+$('#tvMode').addEventListener('click', () => { settings.exposure = 0.7; settings.glow = 0; applyLight(); saveSettings(); sfx.play('click'); });
+$('#lightReset').addEventListener('click', () => { settings.exposure = 0.95; settings.glow = 1; applyLight(); saveSettings(); sfx.play('click'); });
 $('#volume').addEventListener('input', (e) => { settings.volume = +e.target.value; sfx.setVolume(settings.volume); saveSettings(); });
 $('#optSound').addEventListener('change', (e) => { settings.sound = e.target.checked; sfx.setEnabled(settings.sound); saveSettings(); });
 $('#optMusic').addEventListener('change', (e) => { settings.music = e.target.checked; sfx.setMusic(settings.music); saveSettings(); });
@@ -754,6 +774,7 @@ async function boot() {
   setSeg('color', setupCfg.color); setSeg('tc', setupCfg.tc); setSeg('ttc', setupCfg.ttc);
   scene.animSpeed = settings.animSpeed;
   scene.setQuality(settings.quality);
+  applyLight();
   applyTheme();
   scene.setPosition(new Chess().board());
   try { await Promise.race([document.fonts.ready, sleep(2500)]); await document.fonts.load('600 40px "Cormorant Garamond"'); } catch { /* sin fuentes */ }

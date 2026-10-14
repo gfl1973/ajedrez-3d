@@ -124,12 +124,14 @@ export class ChessScene {
     this.onSquareClick = null;
     this.isSelectable = () => false;
     this.selected = null;
+    this.exposure = 0.95; // brillo (tone mapping)
+    this.glow = 1; // 0..1, escala del bloom y emisivos
 
     const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.95;
+    renderer.toneMappingExposure = this.exposure;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
@@ -341,7 +343,7 @@ export class ChessScene {
     this.keyLight.color.set(theme.key[0]); this.keyLight.intensity = theme.key[1];
     this.rimLight.color.set(theme.rim[0]); this.rimLight.intensity = theme.rim[1];
     this.reflector.material.uniforms.strength.value = theme.reflection;
-    this.bloom.strength = theme.bloom.strength; this.bloom.radius = theme.bloom.radius; this.bloom.threshold = theme.bloom.threshold;
+    this.bloom.strength = theme.bloom.strength * this.glow; this.bloom.enabled = this.glow > 0.001; this.bloom.radius = theme.bloom.radius; this.bloom.threshold = theme.bloom.threshold;
     this.dustMat.uniforms.uColor.value.set(theme.particles);
     const accent = new THREE.Color(theme.accent);
     this.accent = accent;
@@ -349,8 +351,37 @@ export class ChessScene {
     this.mLast.forEach((x) => (x.material.opacity = 0.3));
     this.moveMat.color.copy(accent);
     for (const mk of this.mHint) mk.material.color.set('#5fb8ff');
+    this.applyGlowToMaterials();
     if (!theme._coords) theme._coords = coordsTexture({ color: theme.coords });
     this.coords.material.map = theme._coords; this.coords.material.needsUpdate = true;
+  }
+
+  /** Brillo general (exposición del tone mapping). */
+  setExposure(v) { this.exposure = v; this.renderer.toneMappingExposure = v; }
+
+  /** Intensidad del glow 0..1: bloom, emisivos y marcadores aditivos. */
+  setGlow(v) {
+    this.glow = Math.max(0, Math.min(1, v));
+    if (this.theme) {
+      this.bloom.strength = this.theme.bloom.strength * this.glow;
+      this.bloom.enabled = this.glow > 0.001;
+      this.applyGlowToMaterials();
+    }
+  }
+
+  applyGlowToMaterials() {
+    const m = this.theme._mats;
+    for (const mat of Object.values(m)) {
+      if (!mat || mat.emissiveIntensity === undefined) continue;
+      if (mat.userData.baseEmissive === undefined) mat.userData.baseEmissive = mat.emissiveIntensity;
+      mat.emissiveIntensity = mat.userData.baseEmissive * this.glow;
+    }
+    // marcadores aditivos (sin tone mapping): atenuar color, mínimo 35 % para que se vean
+    const f = 0.35 + 0.65 * this.glow;
+    for (const mk of [...this.mLast, this.mSel, this.mHover]) mk.material.color.copy(this.accent).multiplyScalar(f);
+    this.moveMat.color.copy(this.accent).multiplyScalar(f);
+    for (const mk of this.mHint) mk.material.color.set('#5fb8ff').multiplyScalar(f);
+    if (this.mCheck) this.mCheck.material.color.set(0xff2a2a).multiplyScalar(f);
   }
 
   /** Regenera el decal de coordenadas (cuando la fuente web ya está cargada). */
